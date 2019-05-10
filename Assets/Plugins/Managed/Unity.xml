@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+    <assembly>
+        <name>Unity</name>
+    </assembly>
+    <members>
+        <member name="T:AVC.Unity.Axis">
+            <summary>
+            Represents a dimension in a 3-dimensional space.
+            </summary>
+        </member>
+        <member name="F:AVC.Unity.Axis.X">
+            <summary>
+            Represents the X axis.
+            </summary>
+        </member>
+        <member name="F:AVC.Unity.Axis.Y">
+            <summary>
+            Represents the Y axis.
+            </summary>
+        </member>
+        <member name="F:AVC.Unity.Axis.Z">
+            <summary>
+            Represents the Z axis.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.IProgressIndicator">
+            <summary>
+            Represents an object that provides an indication of progress in some process to the user.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.IProgressIndicator.Progress">
+            <summary>
+            The current progress, between 0.0 and 1.0, inclusive.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.IProgressIndicator.Display">
+            <summary>
+            Indicate the current amount of progress to the user.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.Logging.CallbackLogger">
+            <summary>
+            Represents a <see cref="T:AVC.Logging.Logger" /> whose internal message logging behavior is determined by a 
+            callback provided in the constructor, primarily for use with <see cref="T:AVC.Unity.Logging.Logger" />.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Logging.CallbackLogger.#ctor(System.Action{System.String,AVC.Logging.MessageType})">
+            <summary>
+            Initialize a new instance of <see cref="T:AVC.Unity.Logging.CallbackLogger" />.
+            </summary>
+            <param name="logMessageImplCallback">
+            The method/callback that will be forwarded calls to <see cref="M:AVC.Unity.Logging.CallbackLogger.LogMessageImpl(System.String,AVC.Logging.MessageType)" />.
+            </param>
+        </member>
+        <member name="T:AVC.Unity.Logging.FileLogger">
+            <summary>
+            Represents a logger in Unity that logs to files in the <see cref="P:UnityEngine.Application.persistentDataPath" /> directory. 
+            Files are created automatically and named after the application startup time.
+            </summary>
+            <remarks>
+            Subclasses should use the <see cref="P:AVC.Unity.Logging.FileLogger.StreamWriter" /> object provided to log messages. This class simply 
+            handles providing that <see cref="T:System.IO.StreamWriter" /> to subclasses by properly creating and opening a 
+            file, but it is up to the implementing class to handle the use of the <see cref="T:System.IO.StreamWriter" />.
+            </remarks>
+        </member>
+        <member name="F:AVC.Unity.Logging.FileLogger.Extension">
+            <summary>
+            The file extension for log files.
+            </summary>
+        </member>
+        <member name="F:AVC.Unity.Logging.FileLogger.Directory">
+            <summary>
+            The directory within <see cref="P:UnityEngine.Application.persistentDataPath" /> that log files will go.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Logging.FileLogger.TimeStamp">
+            <summary>
+            The hex string representation of the UTC file time of application startup.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Logging.FileLogger.LogPath">
+            <summary>
+            The path to the log file directory.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Logging.FileLogger.StreamWriter">
+            <summary>
+            The <see cref="T:System.IO.StreamWriter" /> that this <see cref="T:AVC.Unity.Logging.FileLogger" /> logs messages to.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Logging.FileLogger.Awake">
+            <summary>
+            Generate a log file for this session.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Logging.FileLogger.Dispose">
+            <summary>
+            Close the open log file.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.Logging.Logger">
+            <summary>
+            Wrapper around the <see cref="T:AVC.Logging.Logger" /> that allows attaching a logger to a 
+            <see cref="T:UnityEngine.GameObject" /> to allow logger configuration in the Editor.
+            </summary>
+            <remarks>
+            This is sort of a nasty hack around the limitations of Unity Components; i.e. you can only attach 
+            <see cref="T:UnityEngine.Component" />-derived classes to <see cref="T:UnityEngine.GameObject" />s. 
+            
+            This class aims to preserve the polymorphic nature of the <see cref="T:AVC.Logging.Logger" /> class while also 
+            allowing its derived classes to be attached to <see cref="T:UnityEngine.GameObject" />s, thus allowing the loggers to be 
+            configured in the inspector. It does this by using the <see cref="T:AVC.Unity.Logging.CallbackLogger" /> class, which is a 
+            class that simply provides a public entry point for the normally protected 
+            <see cref="M:AVC.Unity.Logging.Logger.LogMessageImpl(System.String,AVC.Logging.MessageType)" /> method via an <see cref="T:System.Action`2" />. 
+            Obviously, this is not ideal and requires some fancy dancing around typical object-oriented design, but since 
+            C# doesn't support multiple inheritance and Unity placed the <see cref="T:UnityEngine.Component" />-subclass restriction on 
+            components, this is the best method I've come up with.
+            </remarks>
+        </member>
+        <member name="F:AVC.Unity.Logging.Logger.includeTimeStamps">
+            <summary>
+            Whether to prepend timestamps to logged messages.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Logging.Logger.Log(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log a message. What "log" means is dependent on the concrete implementation of this class that is used.
+            </summary>
+            <param name="message">The message to log.</param>
+            <param name="type">
+            The type of message to log. While <see cref="T:AVC.Logging.MessageType" /> is a flags enum, only one message type should 
+            be used for each message. If multiple types are specified (e.g. Debug | Error), the message will be 
+            treated as the most severe type specified.
+            </param>
+        </member>
+        <member name="M:AVC.Unity.Logging.Logger.LogMessageImpl(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Implementation of message logging, once the message has been formatted by 
+            <see cref="M:AVC.Logging.Logger.Log(System.String,AVC.Logging.MessageType)" />.
+            </summary>
+            <param name="formattedMessage">The message to log, already formatted appropriately.</param>
+            <param name="type">The message type that is being logged.</param>
+        </member>
+        <member name="T:AVC.Unity.Logging.MultiLogger">
+            <summary>
+            Represents a MonoBehaviour version of the <see cref="T:AVC.Logging.MultiLogger" /> class.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Logging.MultiLogger.Log(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log a message.
+            </summary>
+            <param name="message">The message to log.</param>
+            <param name="type">The type of message that is being logged.</param>
+        </member>
+        <member name="T:AVC.Unity.Logging.SafeFileLogger">
+            <summary>
+            Represents a <see cref="T:AVC.Unity.Logging.FileLogger" /> that is fully synchronous. I.e. each call to 
+            <see cref="M:AVC.Unity.Logging.Logger.Log(System.String,AVC.Logging.MessageType)" /> will write to the file immediately, flushing all buffers. This 
+            is useful when the application may be terminated at any time without the opportunity to properly flush buffers 
+            and dispose files.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Logging.SafeFileLogger.LogMessageImpl(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log <paramref name="formattedMessage" /> to the open file and immediately flush the buffer.
+            </summary>
+            <param name="formattedMessage">
+            </param>
+            <param name="type">
+            </param>
+        </member>
+        <member name="T:AVC.Unity.Math">
+            <summary>
+            Provides advanced mathematical fucntions for 3-dimensional operations in Unity.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Math.Lerp(UnityEngine.Rect,UnityEngine.Rect,System.Single)">
+            <summary>
+            Linearly interpolate from <paramref name="from" /> to <paramref name="to" /> by <paramref name="t" />.
+            </summary>
+            <param name="from">
+            </param>
+            <param name="to">
+            </param>
+            <param name="t">
+            </param>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:AVC.Unity.Math.ProjectOnSphere(UnityEngine.Ray,AVC.Unity.Sphere)">
+            <summary>
+            Get the point of intersection between <paramref name="ray" /> and <paramref name="sphere" />. The origin of 
+            <paramref name="ray" /> must be inside the bounds of <paramref name="sphere" />.
+            </summary>
+            <param name="ray">
+            </param>
+            <param name="sphere">
+            </param>
+            <returns>
+            </returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when the origin of <paramref name="ray" /> is not inside the bounds of <paramref name="sphere" />.
+            </exception>
+        </member>
+        <member name="M:AVC.Unity.Math.Clamp(UnityEngine.Quaternion,System.Single,System.Single,AVC.Unity.Axis)">
+            <summary>
+            Clamp one axis of a rotation to a range.
+            </summary>
+            <param name="rotation">The rotation to clamp.</param>
+            <param name="min">The minimum acceptable rotation, in degrees, for <paramref name="axis" />.</param>
+            <param name="max">The maximum acceptable rotation, in degrees, for <paramref name="axis" />.</param>
+            <param name="axis">The axis to clamp. Corresponds to the axis from <paramref name="rotation" />'s <see cref="P:UnityEngine.Quaternion.eulerAngles" />.</param>
+            <returns>
+            </returns>
+        </member>
+        <member name="T:AVC.Unity.Playables.IPausable">
+            <summary>
+            Represents an <see cref="T:AVC.Unity.Playables.IPlayable" /> that can pause execution.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Playables.IPausable.IsPlaying">
+            <summary>
+            Whether playback is running right now.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Playables.IPausable.Pause">
+            <summary>
+            Pause the execution of this object's behavior.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.Playables.IPlayable">
+            <summary>
+            Represents an object that executes a predefined set of actions over time, such as displaying the frames of a 
+            video.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Playables.IPlayable.Play">
+            <summary>
+            Run from the current playback position.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.Playables.IScrollableTimeline">
+            <summary>
+            Represents an <see cref="T:AVC.Unity.Playables.ITimeline" /> that allows for controlling the position of execution within the <see cref="T:AVC.Unity.Playables.ITimeline" />.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Playables.IScrollableTimeline.PlaybackPosition">
+            <summary>
+            The current position in the execution of this <see cref="T:AVC.Unity.Playables.ITimeline" />, in seconds.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Playables.IScrollableTimeline.NormalizedPlaybackPosition">
+            <summary>
+            The current position in the execution of this <see cref="T:AVC.Unity.Playables.ITimeline" />, as a fraction of the 
+            <see cref="P:AVC.Unity.Playables.ITimeline.Length" /> of this <see cref="T:AVC.Unity.Playables.ITimeline" />. Between 0.0 and 1.0, inclusive.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Playables.IScrollableTimeline.Stop">
+            <summary>
+            Pause execution and reset the current playback position to the beginning.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.Playables.ITimeline">
+            <summary>
+            Represents an <see cref="T:AVC.Unity.Playables.IPlayable" /> that has a finite and well-determined maximum length of execution.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Playables.ITimeline.Length">
+            <summary>
+            The total length, in seconds, that it takes for this <see cref="T:AVC.Unity.Playables.ITimeline" /> to complete execution from 
+            start to finish.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Playables.ITimeline.PlaybackPosition">
+            <summary>
+            The current position in the execution of this <see cref="T:AVC.Unity.Playables.ITimeline" />, in seconds.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Playables.ITimeline.NormalizedPlaybackPosition">
+            <summary>
+            The current position in the execution of this <see cref="T:AVC.Unity.Playables.ITimeline" />, as a fraction of the 
+            <see cref="P:AVC.Unity.Playables.ITimeline.Length" /> of this <see cref="T:AVC.Unity.Playables.ITimeline" />. Between 0.0 and 1.0, inclusive.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.ReadOnlyAttribute">
+            <summary>
+            Attribute to prevent editing of a serialized property in the Inspector. Fields marked with this attribute will 
+            still appear in the Inspector, but will not be editable by the user.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.SceneManagement.LoadingSceneController">
+            <summary>
+            Script that controls a loading scene's progress indicator.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.SceneManagement.SceneManager">
+            <summary>
+            The entity responsible for managing scene transitions.
+            </summary>
+            <remarks>
+            This Singleton is used to load scenes, and serves as a wrapper/specialization for Unity's Scene Management 
+            system. Its purpose is to abstract away the additional actions associated with a scene load, such as 
+            presenting a loading scene in between scenes. It only supports a design in which one scene is active at any 
+            given time. To load scenes additively, use the Unity Scene Management interface directly.
+            
+            It is assumed that this instance will reside in a "static" scene that persists throughout the lifetime of the 
+            game session and holds singleton-esque objects such as this one, that are unrelated to any particular scene.
+            </remarks>
+        </member>
+        <member name="F:AVC.Unity.SceneManagement.SceneManager.InactiveSceneLoadThreshold">
+            <summary>
+            The threshold at which a scene can be considered loaded when its load operation is marked to not allow 
+            automatic activation.
+            </summary>
+            <example>
+            AsyncOperation sceneLoader = LoadNextSceneAsync();
+            while(!sceneLoader.isDone){
+                if(sceneLoader.progress &gt;= <see cref="F:AVC.Unity.SceneManagement.SceneManager.InactiveSceneLoadThreshold" />){
+                    NotifyUserThatSceneIsReady();
+                    if(UserConfirmsToEnterNextScene()){
+                        sceneLoader.allowSceneActivation = true;
+                    }
+                }
+                yield return null;
+            }
+            </example>
+        </member>
+        <member name="P:AVC.Unity.SceneManagement.SceneManager.Loading">
+            <summary>
+            Whether a scene is being loaded now.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.SceneManagement.SceneManager.LoadingProgress">
+            <summary>
+            The current progress in loading a scene.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.SceneManagement.SceneManager.OnSceneReady">
+            <summary>
+            Event executed when a scene is ready to activate. Note: non-persistent callbacks must be manually 
+            deregistered when no longer in use.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.SceneManagement.SceneManager.OnSceneLoaded">
+            <summary>
+            Event executed when a scene is loaded and activated. Note: non-persistent callbacks must be manually 
+            deregistered when no longer in use.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.SceneManagement.SceneManager.Awake">
+            <summary>
+                <see cref="T:UnityEngine.MonoBehaviour" /> lifecycle event.
+            </summary>
+            <seealso href="https://docs.unity3d.com/ScriptReference/MonoBehaviour.Awake.html" />
+        </member>
+        <member name="M:AVC.Unity.SceneManagement.SceneManager.SceneLoadDispatch(System.String,System.Boolean,System.Func{System.Boolean})">
+            <summary>
+            Shorthand for SceneManager.Instance.StartCoroutine(SceneManager.Instance.LoadScene(<paramref name="name" />, <paramref name="unloadOldScene" />, <paramref name="waitFor" />));
+            </summary>
+            <seealso cref="M:AVC.Unity.SceneManagement.SceneManager.LoadScene(System.String,System.Boolean,System.Func{System.Boolean})" />
+        </member>
+        <member name="M:AVC.Unity.SceneManagement.SceneManager.LoadScene(System.String,System.Boolean,System.Func{System.Boolean})">
+            <summary>
+            Load a scene asynchronously as a coroutine.
+            </summary>
+            <param name="name">The name of the scene to load.</param>
+            <param name="unloadOldScene">Whether to unload the previous scene after loading the new one.</param>
+            <param name="waitFor">
+            If provided, this callback will be executed each frame once the scene is ready to activate. The scene will 
+            then be activated once this callback returns true.
+            </param>
+            <returns>
+                <see cref="T:System.Collections.IEnumerator" /> for use with <see cref="M:UnityEngine.MonoBehaviour.StartCoroutine(System.Collections.IEnumerator)" />.</returns>
+            <remarks>
+            This is the main implementation of the scene loading pipeline. The process is:
+                1. Add loading scene on top of current scene.
+                2. Remove current scene so that the loading scene is the only scene.
+                3. Add the new scene under the loading scene.
+                4. Unload the loading scene.
+            Note that it is forbidden to begin loading a Scene when loading is already taking place.
+            
+            Two assumptions are made here:
+                1. Scene names are unique within a project.
+                2. Any scene name given as <paramref name="name" /> has been added to the build settings.
+            
+            It is important to note that scene loading will not work if the 
+            <see cref="M:AVC.Unity.SceneManagement.SceneManager.LoadScene(System.String,System.Boolean,System.Func{System.Boolean})" /> coroutine is started on a MonoBehaviour in a scene that will 
+            be unloaded. This is because when a scene is unloaded, its GameObjects are destroyed and destroying a 
+            GameObject stops all coroutines. Therefore, you should use a persistent GameObject's MonoBehaviour to run 
+            the scene loading routine. 
+            E.g. SceneManager.Instance.StartCoroutine(SceneManager.Instance.LoadScene("Scene Name")) rather than 
+            this.StartCoroutine(SceneManager.Instance.LoadScene("Scene Name")).
+            </remarks>
+            <example>
+            //Prompt the user to enter the scene when it's ready.
+            SceneManager.Instance.OnSceneReady.AddListener(PromptUserToEnterScene);
+            //Load the scene and hold it ready until the user accepts the prompt, then activate the scene.
+            SceneManager.Instance.StartCoroutine(SceneManager.Instance.LoadScene("Scene Name", () =&gt; UserAcceptedPrompt()));
+            </example>
+            <exception cref="T:AVC.Unity.SceneManagement.SceneManager.SceneLoadException">
+            Thrown when an error occurs while loading a scene, e.g. when an invalid scene name is given.
+            </exception>
+        </member>
+        <member name="M:AVC.Unity.SceneManagement.SceneManager.FinalizeSceneLoad">
+            <summary>
+            Finalize a scene load by removing the loading scene. Typically called by some script in the newly loaded 
+            scene just after initialization. This method must be called at least once per call to 
+            <see cref="M:AVC.Unity.SceneManagement.SceneManager.LoadScene(System.String,System.Boolean,System.Func{System.Boolean})" />.
+            </summary>
+            <remarks>
+            This method sets a flag for the next loaded scene that removes the loading scene. Therefore, this method 
+            may be called at any point before loading a scene to have it immediately remove the loading scene.
+            </remarks>
+            <example>
+            //Load Next Scene without waiting for anything in the scene to finish initializing.
+            SceneManager.Instance.FinalizeSceneLoad();
+            SceneManager.LoadScene("Next Scene");
+            </example>
+        </member>
+        <member name="M:AVC.Unity.SceneManagement.SceneManager.LoadSceneActions(UnityEngine.AsyncOperation)">
+            <summary>
+            Perform boilerplate actions for whenever a scene is loading, such as updating <see cref="P:AVC.Unity.SceneManagement.SceneManager.LoadingProgress" />.
+            </summary>
+            <param name="sceneLoader">The scene loading operation to work on.</param>
+            <returns>
+                <see cref="T:System.Collections.IEnumerator" /> for use with <see cref="M:UnityEngine.MonoBehaviour.StartCoroutine(System.Collections.IEnumerator)" />.</returns>
+        </member>
+        <member name="T:AVC.Unity.Serialization.ISerializedFieldContainer">
+            <summary>
+            Represents a type (typically a struct) that acts as a container for Unity-serialized fields.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Serialization.ISerializedFieldContainer.EnsureAllAssigned">
+            <summary>
+            Ensure that all the serialized fields have been assigned values in the inspector.
+            </summary>
+            <exception cref="T:UnityEngine.UnassignedReferenceException">
+            Thrown when one of the fields in this container is unassigned.
+            </exception>
+            <seealso cref="M:AVC.Unity.Utilities.EnsureAssigned(UnityEngine.Object)" />
+        </member>
+        <member name="T:AVC.Unity.Singleton`1">
+            <summary>
+            Base class representing a Monobehaviour object that should only exist as one globally accessible instance at any given time.
+            Make your type adhere to this rule by inheriting from Singleton&lt;T&gt; where T is your type.
+            The instance of your type may be accessed globally (read-only) via T.Instance.
+            Your class is responsible for its own instantiation. Typically, this is done in the Unity editor by adding a persistent object to a scene's hierarchy.
+            You class should call the base virtual method Singleton&lt;T&gt;.Awake() in its Awake if it defines its own Awake method (via marking its Awake method as override and calling base.Awake()).
+            Singleton&lt;T&gt;.Awake() properly registers the instance of the derived class at startup. If an instance of your class attempts to register itself (via Awake() or the Singleton.Instance setter) when an instance has already been registered, a SingletonException will be thrown.
+            </summary>
+            <typeparam name="T">
+            </typeparam>
+        </member>
+        <member name="F:AVC.Unity.Singleton`1.persistent">
+            <summary>
+            [Singleton] Whether this instance should persist across scene loads.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Singleton`1.Instance">
+            <summary>
+            The currently registered unique instance of type T
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Singleton`1.Awake">
+            <summary>
+            Initialize this <see cref="T:AVC.Unity.Singleton`1" />.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Singleton`1.OnApplicationQuit">
+            <summary>
+            Ensures that an <see cref="P:AVC.Unity.Singleton`1.Instance" /> will not be instantiated when the Application is quitting, as this 
+            will cause bugs in Unity.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.SingletonException">
+            <summary>
+            Represents an error related to the assumptions made by the Singleton design pattern.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.SingletonException.#ctor" />
+        <member name="M:AVC.Unity.SingletonException.#ctor(System.String)" />
+        <member name="M:AVC.Unity.SingletonException.#ctor(System.String,System.Exception)" />
+        <member name="M:AVC.Unity.SingletonException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)" />
+        <member name="T:AVC.Unity.Sphere">
+            <summary>
+            Represents a spherical volume in space.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Sphere.Radius">
+            <summary>
+            The distance from the <see cref="P:AVC.Unity.Sphere.Center" /> that marks the outer boundary of the volume.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.Sphere.Center">
+            <summary>
+            The point in space that defines the center of the volume.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Sphere.#ctor(System.Single,UnityEngine.Vector3)">
+            <summary>
+            Initialize a new instance of struct <see cref="T:AVC.Unity.Sphere" /> with <see cref="P:AVC.Unity.Sphere.Radius" /><paramref name="radius" /> and <see cref="P:AVC.Unity.Sphere.Center" /><paramref name="center" />.
+            </summary>
+            <param name="radius">
+            </param>
+            <param name="center">
+            </param>
+        </member>
+        <member name="M:AVC.Unity.Sphere.Lerp(AVC.Unity.Sphere,AVC.Unity.Sphere,System.Single)">
+            <summary>
+            Calculate the linear interpolation from <paramref name="from" /> to <paramref name="to" /> by the normalized 
+            parameter <paramref name="t" />.
+            </summary>
+            <param name="from">The <see cref="T:AVC.Unity.Sphere" /> to interpolate from.</param>
+            <param name="to">The <see cref="T:AVC.Unity.Sphere" /> to interpolate toward.</param>
+            <param name="t">The normalized parameter to interpolate by.</param>
+            <returns>
+            The <see cref="T:AVC.Unity.Sphere" /> that represents the result of interpolating from <paramref name="from" /> to 
+            <paramref name="to" /> by <paramref name="t" />.
+            </returns>
+        </member>
+        <member name="T:AVC.Unity.UI.PopupMenu">
+            <summary>
+            Represents a UI panel or menu that may be opened/closed. Controls a <see cref="T:UnityEngine.Canvas" /> by fading 
+            it in/out visually as well as disabling it for interaction.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.UI.PopupMenu.Canvas">
+            <summary>
+            The Canvas that this script controls.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.UI.PopupMenu.Raycaster">
+            <summary>
+            The raycaster that is associated with <see cref="P:AVC.Unity.UI.PopupMenu.Canvas" />.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.UI.PopupMenu.TransitionTime">
+            <summary>
+            The time it takes to transition between open and closed, in seconds.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.UI.PopupMenu.Open">
+            <summary>
+            The current state of this <see cref="T:AVC.Unity.UI.PopupMenu" />. Note that the value of <see cref="P:AVC.Unity.UI.PopupMenu.Open" /> will not 
+            immediately reflect newly set values, as it is only updated when state transitions have completed.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.UI.PopupMenu.Awake">
+            <summary>
+                <see cref="T:UnityEngine.MonoBehaviour" /> lifecycle event.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.UI.PopupMenu.Update">
+            <summary>
+                <see cref="T:UnityEngine.MonoBehaviour" /> lifecycle event.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.UI.PopupMenu.InitializeStateMachine">
+            <summary>
+            Initialize this PopupMenu's StateMachine to the appropriate initial State.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.UI.ProgressBar">
+            <summary>
+            Script that controls an <see cref="T:UnityEngine.UI.Image" />'s <see cref="P:UnityEngine.UI.Image.fillAmount" /> in relation to a progress value.
+            </summary>
+        </member>
+        <member name="P:AVC.Unity.UI.ProgressBar.Progress">
+            <summary>
+            The current progress, between 0.0 and 1.0, inclusive.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.UI.ProgressBar.Display">
+            <summary>
+            Indicate the current amount of progress to the user.
+            </summary>
+        </member>
+        <member name="T:AVC.Unity.Utilities">
+            <summary>
+            Provides common utility functions for unity applications.
+            </summary>
+        </member>
+        <member name="M:AVC.Unity.Utilities.EnsureAssigned(UnityEngine.Object)">
+            <summary>
+            Ensure that a reference field was assigned in the inspector.
+            </summary>
+            <param name="reference">
+            </param>
+            <exception cref="T:UnityEngine.UnassignedReferenceException">
+            Thrown when <paramref name="reference" /> is unassigned.
+            </exception>
+        </member>
+        <member name="M:AVC.Unity.Utilities.EnsureAssigned(System.String)">
+            <summary>
+            Ensure that a string value was given for a string field in the inspector.
+            </summary>
+            <param name="stringField">
+            </param>
+            <exception cref="T:UnityEngine.UnassignedReferenceException">
+            Thrown when the value of <paramref name="stringField" /> is null or empty.
+            </exception>
+        </member>
+        <member name="M:AVC.Unity.Utilities.EnsureAssigned(System.Collections.Generic.IEnumerable{UnityEngine.Object})">
+            <summary>
+            Ensure that an array or list has no empty references and is not empty itself (length 0)
+            </summary>
+            <param name="references">
+            </param>
+            <exception cref="T:UnityEngine.UnassignedReferenceException">
+            Thrown if any of the references in <paramref name="references" /> are unassigned.
+            </exception>
+        </member>
+        <member name="M:AVC.Unity.Utilities.EnsureAssigned(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Ensure that an array or list of strings is not empty and values have been entered for all entries.
+            </summary>
+            <param name="stringFields">
+            </param>
+            <exception cref="T:UnityEngine.UnassignedReferenceException">
+            Thrown if any of the references in <paramref name="stringFields" /> are empty or null.
+            </exception>
+        </member>
+        <member name="M:AVC.Unity.Utilities.EnsureAssigned(AVC.Unity.Serialization.ISerializedFieldContainer)">
+            <summary>
+            Ensure that an object that represents a collection of serialized fields has all fields serialized.
+            </summary>
+            <param name="serializedFieldContainer">
+            </param>
+            <exception cref="T:UnityEngine.UnassignedReferenceException">See <see cref="T:AVC.Unity.Serialization.ISerializedFieldContainer" />.</exception>
+        </member>
+        <member name="M:AVC.Unity.Utilities.LookAway(UnityEngine.Transform,UnityEngine.Transform)">
+            <summary>
+            Rotate this Transform such that it will look away from the target Transform. This is the opposite of Transform.LookAt()
+            </summary>
+            <param name="transform">
+            </param>
+            <param name="target">
+            </param>
+        </member>
+        <member name="M:AVC.Unity.Utilities._queueCoroutines(UnityEngine.MonoBehaviour,System.Collections.Generic.IEnumerable{System.Collections.IEnumerator})">
+            <summary>
+            Coroutine back-end for <see cref="M:AVC.Unity.Utilities.QueueCoroutines(UnityEngine.MonoBehaviour,System.Collections.Generic.IEnumerable{System.Collections.IEnumerator})" />.
+            </summary>
+            <param name="executor">
+            </param>
+            <param name="coroutines">
+            </param>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:AVC.Unity.Utilities.QueueCoroutines(UnityEngine.MonoBehaviour,System.Collections.Generic.IEnumerable{System.Collections.IEnumerator})">
+            <summary>
+            Execute multiple coroutines in sequence. Usage: this.QueueCoroutines(coroutineList);
+            </summary>
+            <param name="monoBehaviour">
+            The <see cref="T:UnityEngine.MonoBehaviour" /> that will execute the coroutines via its 
+            <see cref="M:UnityEngine.MonoBehaviour.StartCoroutine(System.Collections.IEnumerator)" /> method.
+            </param>
+            <param name="coroutines">An enumerable collection of coroutines to execute in order.</param>
+            <returns>A Coroutine to allow chaining</returns>
+        </member>
+        <member name="M:AVC.Unity.Utilities.GetOrAddComponent``1(UnityEngine.Component)">
+            <summary>
+            Get the component attached to <paramref name="monoBehaviour" />, or attach a new one if none is found.
+            </summary>
+            <typeparam name="T">
+            </typeparam>
+            <param name="monoBehaviour">
+            </param>
+            <returns>The found or added Component.</returns>
+        </member>
+    </members>
+</doc>

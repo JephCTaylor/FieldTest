@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+    <assembly>
+        <name>AVCLib</name>
+    </assembly>
+    <members>
+        <member name="T:AVC.Caching.MemoryValue`1">
+            <summary>
+            Represents a variable that remembers its previous values. When treated as a List (via IReadOnlyList), 
+            values are stored sequentially in ascending order of age, with the current value at index 0.
+            </summary>
+            <typeparam name="T">The type of value to remember.</typeparam>
+        </member>
+        <member name="P:AVC.Caching.MemoryValue`1.MemoryLength">
+            <summary>
+            The number of values this <see cref="T:AVC.Caching.MemoryValue`1" /> remembers. Always &gt;= 1, as the current value is 
+            included in this count.
+            </summary>
+        </member>
+        <member name="P:AVC.Caching.MemoryValue`1.Value">
+            <summary>
+            The current value.
+            </summary>
+        </member>
+        <member name="M:AVC.Caching.MemoryValue`1.#ctor(`0,System.Int32)">
+            <summary>
+            Construct a new MemoryValue. The length of this MemoryValue's memory is immutable and must be set via constructor.
+            </summary>
+            <param name="initialValue">The initial value</param>
+            <param name="memoryLength">The number of values to remember, not including the current value. Must be &gt;= 0.</param>
+        </member>
+        <member name="M:AVC.Caching.MemoryValue`1.GetHistory(System.Int32)">
+            <summary>
+            Get the value at the specified point in history.
+            </summary>
+            <param name="age">
+            The index within this MemoryValue's history to retrieve. This value represents the number of changes to 
+            this MemoryValue that have occurred since the specified index. E.g. index 0 is the current value, 1 is the 
+            previous value, etc.
+            </param>
+            <returns>The value that this MemoryValue contained at the specified point in its history.</returns>
+        </member>
+        <member name="M:AVC.Caching.MemoryValue`1.op_Implicit(AVC.Caching.MemoryValue{`0})~`0">
+            <summary>
+            Implicitly convert a <see cref="T:AVC.Caching.MemoryValue`1" /> to <typeparamref name="T" />. Equivalent to 
+            <see cref="P:AVC.Caching.MemoryValue`1.Value" />.
+            </summary>
+            <param name="memoryValue">The <see cref="T:AVC.Caching.MemoryValue`1" /> to convert.</param>
+        </member>
+        <member name="P:AVC.Caching.MemoryValue`1.System#Collections#Generic#IReadOnlyList{T}#Item(System.Int32)">
+            <summary>
+            Equivalent to <see cref="M:AVC.Caching.MemoryValue`1.GetHistory(System.Int32)" />.
+            </summary>
+        </member>
+        <member name="P:AVC.Caching.MemoryValue`1.System#Collections#Generic#IReadOnlyCollection{T}#Count">
+            <summary>
+            Equivalent to <see cref="P:AVC.Caching.MemoryValue`1.MemoryLength" />.
+            </summary>
+        </member>
+        <member name="T:AVC.Caching.OptimizedMemoryValue`1">
+            <summary>
+            Represents a variable that remembers its previous values. When enumerated, values will be given in ascending 
+            order of age. I.e. the current value is first, the previous value is second, etc.
+            </summary>
+            <typeparam name="T">The type of value to remember. Must be a value type.</typeparam>
+        </member>
+        <member name="P:AVC.Caching.OptimizedMemoryValue`1.Value">
+            <summary>
+            The current value.
+            </summary>
+        </member>
+        <member name="M:AVC.Caching.OptimizedMemoryValue`1.#ctor(System.Int32)">
+            <summary>
+            Initialize a new instance of the <see cref="T:AVC.Caching.OptimizedMemoryValue`1" /> class.
+            </summary>
+            <param name="memoryLength">How long the memory should be.</param>
+        </member>
+        <member name="M:AVC.Caching.OptimizedMemoryValue`1.#ctor(`0,System.Int32)">
+            <summary>
+            Initialize a new instance of the <see cref="T:AVC.Caching.OptimizedMemoryValue`1" /> class.
+            </summary>
+            <param name="initialValue">The initial value.</param>
+            <param name="memoryLength">How long the memory should be.</param>
+        </member>
+        <member name="P:AVC.Caching.OptimizedMemoryValue`1.Count" />
+        <member name="M:AVC.Caching.OptimizedMemoryValue`1.GetEnumerator" />
+        <member name="M:AVC.Caching.OptimizedMemoryValue`1.System#Collections#IEnumerable#GetEnumerator" />
+        <member name="T:AVC.Logging.DummyLogger">
+            <summary>
+            Represents an <see cref="T:AVC.Logging.ILogger" /> that does nothing.
+            </summary>
+        </member>
+        <member name="M:AVC.Logging.DummyLogger.Log(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log a message.
+            </summary>
+            <param name="message">The message to log.</param>
+            <param name="type">The type of message that is being logged.</param>
+        </member>
+        <member name="T:AVC.Logging.ILogger">
+            <summary>
+            Represents an object that is responsible for logging messages.
+            </summary>
+        </member>
+        <member name="M:AVC.Logging.ILogger.Log(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log a message.
+            </summary>
+            <param name="message">The message to log.</param>
+            <param name="type">The type of message that is being logged.</param>
+        </member>
+        <member name="T:AVC.Logging.INamedObject">
+            <summary>
+            Represents an object that has a human-readable name.
+            </summary>
+        </member>
+        <member name="P:AVC.Logging.INamedObject.Name">
+            <summary>
+            The human-readable name of this object.
+            </summary>
+        </member>
+        <member name="T:AVC.Logging.Logger">
+            <summary>
+            Represents the base type of <see cref="T:AVC.Logging.ILogger" />, which handles common logging functionality, such as 
+            formatting log messages and adding timestamps.
+            </summary>
+        </member>
+        <member name="P:AVC.Logging.Logger.IncludeTimestamps">
+            <summary>
+            Whether to include a timestamp prefix with each logged message.
+            </summary>
+        </member>
+        <member name="P:AVC.Logging.Logger.AcceptedMessageTypes">
+            <summary>
+            The types of message to accept. Messages that do not match this flag will be ignored.
+            </summary>
+        </member>
+        <member name="P:AVC.Logging.Logger.CurrentTimeString">
+            <summary>
+            The current time as a datetime-formatted string.
+            </summary>
+        </member>
+        <member name="M:AVC.Logging.Logger.Log(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log a message. What "log" means is dependent on the concrete implementation of this class that is used.
+            </summary>
+            <param name="message">The message to log.</param>
+            <param name="type">
+            The type of message to log. While <see cref="T:AVC.Logging.MessageType" /> is a flags enum, only one message type should 
+            be used for each message. If multiple types are specified (e.g. Debug | Error), the message will be 
+            treated as the most severe type specified.
+            </param>
+        </member>
+        <member name="M:AVC.Logging.Logger.LogMessageImpl(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Implementation of message logging, once the message has been formatted by 
+            <see cref="M:AVC.Logging.Logger.Log(System.String,AVC.Logging.MessageType)" />.
+            </summary>
+            <param name="formattedMessage">The message to log, already formatted appropriately.</param>
+            <param name="type">The message type that is being logged.</param>
+        </member>
+        <member name="T:AVC.Logging.MessageType">
+            <summary>
+            Represents a type of message for logging purposes, used to categorize and/or style log messages.
+            </summary>
+        </member>
+        <member name="F:AVC.Logging.MessageType.Debug">
+            <summary>
+            Debug output, for use by developers to diagnose issues and follow code execution.
+            </summary>
+        </member>
+        <member name="F:AVC.Logging.MessageType.Info">
+            <summary>
+            Informational output that does not indicate an issue but may be relevant to a non-expert user.
+            </summary>
+        </member>
+        <member name="F:AVC.Logging.MessageType.Warning">
+            <summary>
+            Indicates a problem ocurring that does not interfere with continued execution of the program.
+            </summary>
+        </member>
+        <member name="F:AVC.Logging.MessageType.Error">
+            <summary>
+            Indicates a problem ocurring that will interfere with continued execution and/or will cause unexpected or 
+            undesired behavior.
+            </summary>
+        </member>
+        <member name="F:AVC.Logging.MessageType.Output">
+            <summary>
+            Indicates output intended for a non-expert user, such as data logging.
+            </summary>
+        </member>
+        <member name="T:AVC.Logging.MultiLogger">
+            <summary>
+            Represents an <see cref="T:AVC.Logging.ILogger" /> that directly forwards received log messages into 0 or more 
+            <see cref="T:AVC.Logging.ILogger" />  instances.
+            </summary>
+        </member>
+        <member name="M:AVC.Logging.MultiLogger.Log(System.String,AVC.Logging.MessageType)">
+            <summary>
+            Log a message.
+            </summary>
+            <param name="message">The message to log.</param>
+            <param name="type">The type of message that is being logged.</param>
+        </member>
+        <member name="M:AVC.Logging.MultiLogger.RegisterLogger(AVC.Logging.ILogger)">
+            <summary>
+            Register an <see cref="T:AVC.Logging.ILogger" /> to receive log commands.
+            </summary>
+            <param name="logger">
+            </param>
+        </member>
+        <member name="M:AVC.Logging.MultiLogger.UnregisterLogger(AVC.Logging.ILogger)">
+            <summary>
+            Unregister an <see cref="T:AVC.Logging.ILogger" /> to receive log commands.
+            </summary>
+            <param name="logger">
+            </param>
+        </member>
+        <member name="T:AVC.Math">
+            <summary>
+            Provides advanced mathematical functions.
+            </summary>
+        </member>
+        <member name="M:AVC.Math.IsEven(System.Int32)">
+            <summary>
+            Determine if integer <paramref name="number" /> is an even number.
+            </summary>
+            <param name="number">
+            </param>
+            <returns>true if <paramref name="number" /> is even, or false if it is odd.</returns>
+        </member>
+        <member name="M:AVC.Math.Gcd(System.Int32,System.Int32)">
+            <summary>
+            Determines the largest integer such that both <paramref name="a" /> and <paramref name="b" /> are evenly 
+            divisible by it.
+            </summary>
+            <param name="a">
+            </param>
+            <param name="b">
+            </param>
+            <returns>The largest number that both <paramref name="a" /> and <paramref name="b" /></returns>
+        </member>
+        <member name="M:AVC.Math.InRange``1(``0,``0,``0)">
+            <summary>
+            Determine whether value is within the range [<paramref name="min" />, <paramref name="max" />].
+            </summary>
+            <typeparam name="T">
+            </typeparam>
+            <param name="min">
+            </param>
+            <param name="value">
+            </param>
+            <param name="max">
+            </param>
+            <returns>true if value is within the range [<paramref name="min" />, <paramref name="max" />].</returns>
+        </member>
+        <member name="M:AVC.Math.Lerp(System.Double,System.Double,System.Double)">
+            <summary>
+            Linearly interpolate from <paramref name="from" /> to <paramref name="to" /> by <paramref name="t" />.
+            </summary>
+            <param name="from">Start value.</param>
+            <param name="to">End value.</param>
+            <param name="t">Portion of the distance between <paramref name="from" /> and <paramref name="to" /> to interpolate.</param>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:AVC.Math.Map(System.Double,AVC.Range{System.Double},AVC.Range{System.Double})">
+            <summary>
+            Map <paramref name="value" /> from <paramref name="domain" /> to <paramref name="range" /> linearly.
+            </summary>
+            <param name="value">
+            Value in [<paramref name="domain" />.Min, <paramref name="domain" />.Max] to map. Value is not required to 
+            be contained within the domain, but if value is outside the domain, the result will correspondingly lie 
+            outside of the range.
+            </param>
+            <param name="domain">The range that contains <paramref name="value" />.</param>
+            <param name="range">The range to map <paramref name="value" /> to.</param>
+            <returns>
+            </returns>
+        </member>
+        <member name="T:AVC.Range`1">
+            <summary>
+            Represents a range of values.
+            </summary>
+            <typeparam name="T">The type of object that this range refers to.</typeparam>
+        </member>
+        <member name="P:AVC.Range`1.Min">
+            <summary>
+            The minimum value of this <see cref="T:AVC.Range`1" />.
+            </summary>
+        </member>
+        <member name="P:AVC.Range`1.Max">
+            <summary>
+            The maximum value of this <see cref="T:AVC.Range`1" />.
+            </summary>
+        </member>
+        <member name="M:AVC.Range`1.#ctor(`0,`0)">
+            <summary>
+            Create a new <see cref="T:AVC.Range`1" />.
+            </summary>
+            <param name="min">
+                <see cref="P:AVC.Range`1.Min" />
+            </param>
+            <param name="max">
+                <see cref="P:AVC.Range`1.Max" />
+            </param>
+        </member>
+        <member name="M:AVC.Range`1.Contains(`0,System.Boolean,System.Boolean)">
+            <summary>
+            Determine whether value is contained within this <see cref="T:AVC.Range`1" />.
+            </summary>
+            <param name="value">The value to check.</param>
+            <param name="minInclusive">Whether to </param>
+            <param name="maxInclusive">
+            </param>
+            <returns>
+            </returns>
+        </member>
+        <member name="T:AVC.StateMachines.State`2">
+            <summary>
+            Represents a state that a state machine can be in. State transitions occur on the next tick after setting 
+            NestState.
+            </summary>
+            <typeparam name="TState">The base state type deriving from this class.</typeparam>
+            <typeparam name="TInput">The type of input this state will receive.</typeparam>
+        </member>
+        <member name="P:AVC.StateMachines.State`2.NextState">
+            <summary>
+            The <see cref="T:AVC.StateMachines.State`2" /> that this State's State Machine should enter next tick.
+            </summary>
+        </member>
+        <member name="M:AVC.StateMachines.State`2.#ctor">
+            <summary>
+            Construct a new <see cref="T:AVC.StateMachines.State`2" />. This should be called by every constructor for 
+            derived types.
+            </summary>
+        </member>
+        <member name="M:AVC.StateMachines.State`2.Input(`1)">
+            <summary>
+            Receive input data.
+            </summary>
+            <param name="input">The data to receive.</param>
+        </member>
+        <member name="M:AVC.StateMachines.State`2.Tick(System.Single)">
+            <summary>
+            Perform one discrete step of processing without input.
+            </summary>
+            <param name="deltaTime">The time since the last tick.</param>
+        </member>
+        <member name="M:AVC.StateMachines.State`2.OnStateEnter">
+            <summary>
+            Method called on a state immediately after it becomes the current state of a 
+            <see cref="T:AVC.StateMachines.StateMachine`2" />. Override this method to implement custom behavior on this 
+            event. Does nothing by default, so calling base.OnStateEnter() is unnecessary.
+            </summary>
+        </member>
+        <member name="M:AVC.StateMachines.State`2.OnStateExit">
+            <summary>
+            Method called on a state immediately before it ceases to be the current state of a 
+            <see cref="T:AVC.StateMachines.StateMachine`2" />. Override this method to implement custom behavior on this 
+            event. Does nothing by default, so calling base.OnStateExit() is unnecessary.
+            </summary>
+        </member>
+        <member name="T:AVC.StateMachines.StateMachine`2">
+            <summary>
+            Represents a finite state machine that uses polymorphism to implement its behavior.
+            </summary>
+            <typeparam name="TState">The base state type.</typeparam>
+            <typeparam name="TInput">The type of input <typeparamref name="TState" /> receives.</typeparam>
+            <remarks>
+            This class represents a write-only system. I.e. commands may be sent to it, but its internal state is 
+            inaccessible to the user. The purpose of this is to force the StateMachine's behavior to be defined entirely 
+            by its current State.
+            </remarks>
+            <example>
+            enum CommandEnum { Start, Stop }
+            class MyBaseState : State&lt;MyBaseState, CommandEnum&gt; {}
+            class RunningState : MyBaseState {}
+            class IdleState : MyBaseState {}
+            
+            StateMachine&lt;MyBaseState, CommandEnum&gt; stateMachine = new StateMachine&lt;MyBaseState, CommandEnum&gt;(new IdleState());
+            
+            void Update() { stateMachine.Input(GetUserInputCommand()); stateMachine.Tick(); }
+            </example>
+        </member>
+        <member name="P:AVC.StateMachines.StateMachine`2.State">
+            <summary>
+            The current state. Setting this value will automatically send the 
+            <see cref="M:AVC.StateMachines.State`2.OnStateEnter" /> and  <see cref="M:AVC.StateMachines.State`2.OnStateExit" /> 
+            events.
+            </summary>
+        </member>
+        <member name="M:AVC.StateMachines.StateMachine`2.#ctor(`0)">
+            <summary>
+            Create a new state machine.
+            </summary>
+            <param name="initialState">The state to start in.</param>
+        </member>
+        <member name="M:AVC.StateMachines.StateMachine`2.Input(`1)">
+            <summary>
+            Receive input data.
+            </summary>
+            <param name="input">The data to receive.</param>
+        </member>
+        <member name="M:AVC.StateMachines.StateMachine`2.Tick(System.Single)">
+            <summary>
+            Perform one discrete step of processing.
+            </summary>
+            <param name="deltaTime">The time since the last tick.</param>
+        </member>
+        <member name="T:AVC.UnexpectedEnumValueException`1">
+            <summary>
+            Represents an error that occurs when a method is given an enum value that it does not support.
+            </summary>
+            <typeparam name="T">The type of enum.</typeparam>
+        </member>
+        <member name="M:AVC.UnexpectedEnumValueException`1.#ctor(`0)">
+            <summary>
+            Initializes a new instance of the <see cref="T:AVC.UnexpectedEnumValueException`1" /> class with a helpful 
+            message.
+            </summary>
+            <param name="value">The value that caused the error.</param>
+        </member>
+        <member name="T:AVC.Utilities">
+            <summary>
+            Provides commom utility methods.
+            </summary>
+        </member>
+        <member name="P:AVC.Utilities.Random">
+            <summary>
+            Public static instance of <see cref="T:System.Random" />. Not thread-safe.
+            </summary>
+        </member>
+        <member name="M:AVC.Utilities.TraverseTree``1(``0,System.Action{``0})">
+            <summary>
+            Traverse a tree of nodes, executing <paramref name="callback" /> on each node. 
+            Note: does not account for circular references.
+            </summary>
+            <typeparam name="T">The type of object that makes up the tree.</typeparam>
+            <param name="root">The starting node in the tree.</param>
+            <param name="callback">Callback to execute on each node.</param>
+            <remarks>
+            A tree is this instance is defined as a set of objects that, when any of them is iterated through, will 
+            iterate each of its child nodes in the tree. There is no requirement that the objects be related to each 
+            other via any external collection.
+            </remarks>
+        </member>
+        <member name="M:AVC.Utilities.GetEnumName``1(``0)">
+            <summary>
+            Get the name of an enum value as a string.
+            This method is an alias for System.Enum.GetName().
+            </summary>
+            <typeparam name="T">Enum type</typeparam>
+            <param name="value">
+            The enum value to get the name of. Not type safe, so it is up to the caller to make sure that this method 
+            is only used for enum values.
+            </param>
+            <returns>The string representation of the name of this enum value.</returns>
+            <example>Utilities.GetEnumName(myEnumValue);</example>
+            <remarks>
+            This method uses reflection (via System.Enum.GetName()), and thus represents a performance hazard. It is 
+            recommended to only use this method for debugging purposes.
+            </remarks>
+        </member>
+        <member name="M:AVC.Utilities.Choose``1(System.Collections.Generic.IReadOnlyList{``0})">
+            <summary>
+            Choose a random element from a collection.
+            </summary>
+            <typeparam name="T">The type of elements in the collecion.</typeparam>
+            <param name="list">The list to choose from.</param>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:AVC.Utilities.ChooseEnum``1">
+            <summary>
+            Choose a random enum value for a specified enum type.
+            </summary>
+            <typeparam name="T">The type of enum to choose a value from.</typeparam>
+            <returns>
+            </returns>
+            <example>MyEnum value = ChooseEnum&lt;MyEnum&gt;();</example>
+            <remarks>
+            This method uses reflection (via System.Enum.GetValues()), and thus represents a performance hazard. It is 
+            recommended to only use this method for debugging purposes.
+            </remarks>
+        </member>
+        <member name="M:AVC.Utilities.ExtractHighBit(System.Int32)">
+            <summary>
+            Set all the bits in a bit field to 0, except for the highest bit that is 1. E.g. 01011000 -&gt; 01000000
+            </summary>
+            <param name="bitfield">
+            </param>
+            <returns>
+            </returns>
+        </member>
+    </members>
+</doc>
