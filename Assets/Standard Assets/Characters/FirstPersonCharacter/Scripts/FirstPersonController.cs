@@ -45,6 +45,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Use this for initialization
         private void Start()
         {
+            Cursor.visible = !Cursor.visible;
             m_CharacterController = GetComponent<CharacterController>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
@@ -61,6 +62,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Update is called once per frame
         private void Update()
         {
+            DisplayCursor();
             RotateView();
             // the jump state needs to read here to make sure it is not missed
             if (!m_Jump)
@@ -83,6 +85,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
             m_PreviouslyGrounded = m_CharacterController.isGrounded;
         }
 
+        private void DisplayCursor()
+        {
+            if (Input.GetKey(KeyCode.Tab))
+            {
+                Cursor.visible = true;
+            }
+            else
+            {
+                Cursor.visible = false;
+            }
+        }
 
         private void PlayLandingSound()
         {
