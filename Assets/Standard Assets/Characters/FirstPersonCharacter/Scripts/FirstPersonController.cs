@@ -46,7 +46,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         // Use this for initialization
         private void Start()
         {
-            Cursor.visible = !Cursor.visible;
+            Cursor.visible = false;
             m_CharacterController = GetComponent<CharacterController>();
             m_Camera = Camera.main;
             m_OriginalCameraPosition = m_Camera.transform.localPosition;
@@ -91,11 +91,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 lockCursor = !lockCursor;
+                Cursor.visible = true;
+                m_MouseLook.XSensitivity = 0f;
+                m_MouseLook.YSensitivity = 0f;
             }
 
             if (lockCursor)
             {
                 Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+                m_MouseLook.XSensitivity = 2f;
+                m_MouseLook.YSensitivity = 2f;
             }
             else
             {
